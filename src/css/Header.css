@@ -1,9 +1,16 @@
+body {
+    background-color: wheat;
+    margin: 0;
+    padding: 0;
+}
 .appHeader {
-    background-color: blanchedalmond;
+    width: 100%;
+    padding: 0;
 }
 
 .navBar {
     display: flex;
+    background-image: url("/public/banner.jpg");
     align-items: center;
 }
 
@@ -16,10 +23,13 @@
     height: 50px;
 }
 
+.button:hover{
+    background-color: blanchedalmond;
+}
+
 .userBtns {
     position: absolute;
     right: 0px;
-    margin-right: 20px;
 }
 
 .dropdownContent {

@@ -1,18 +1,6 @@
 <?php 
 include 'database.php';
 
-function loadUser($user){
-    $conn = openCon("localhost", "root", "", "reviewsite");
-
-    $query = "SELECT username, passsword FROM users WHERE username = '{$user}'";
-    $result = $conn->query($query);
-
-    $row = $result->fetch_all(MYSQLI_ASSOC);
-    echo json_encode($row);
-
-    closeCon($conn);
-}
-
 function logUser($user, $pass) {
     $conn = openCon("localhost", "root", "", "reviewsite");
 
@@ -26,7 +14,7 @@ function logUser($user, $pass) {
 
     if ($userCount === 1) {
         $userRow = $userResult->fetch_assoc();
-        $result = array("username" => $userRow['username']);
+        $result = array("username" => $userRow['username'], "isadmin" => $userRow['isAdmin']);
         echo json_encode($result);
     }
 
@@ -36,8 +24,5 @@ if (isset($_POST['username'])){
     logUser($_POST['username'], $_POST['password']);
 }
 
-else if (isset($_GET['username'])){
-    loadUser($_GET['username']);
-}
 
 ?>

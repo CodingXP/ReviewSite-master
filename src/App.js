@@ -40,11 +40,6 @@ function NavLink({ route, btn }) {
   );
 }
 
-function handleLogout() {
-  localStorage.setItem("LOGIN_STATUS", false);
-  localStorage.setItem("USERNAME", null);
-  window.location.reload(true);
-}
 
 function NavBarAuth () {
   const [password, setPassword] = useState("");
@@ -56,10 +51,14 @@ function NavBarAuth () {
     const initial = JSON.parse(localStorage.getItem('LOGIN_STATUS'));
     return initial || false;  
   });
+  const [isAdmin, setIsAdmin] = useState(() => {
+    const initial = JSON.parse(localStorage.getItem("ADMIN_STATUS"));
+    return initial || false;
+  })
 
   useEffect(() => {
     const data = window.localStorage.getItem("LOGIN_STATUS");
-    if (data != null){
+    if (data !== null){
       setIsLoggedIn(JSON.parse(data));
       window.localStorage.setItem("LOGIN_STATUS", JSON.stringify(isLoggedin));
     }
@@ -67,11 +66,23 @@ function NavBarAuth () {
 
   useEffect(() => {
     const data = window.localStorage.getItem("USERNAME");
-    if (data != ""){
+    if (data !== ""){
       setUsername(JSON.parse(data));
       window.localStorage.setItem("USERNAME", JSON.stringify(username));
     }
   }, [])
+
+  useEffect(() => {
+    const admin = window.localStorage.getItem("ADMIN_STATUS");
+    if (admin !== null){
+      setIsAdmin(JSON.parse(admin));
+      window.localStorage.setItem("ADMIN_STATUS", JSON.stringify(isAdmin));
+    }
+  }, [])
+
+  useEffect(() => {
+    window.localStorage.setItem("ADMIN_STATUS", JSON.stringify(isAdmin));
+  }, [isAdmin])
 
   useEffect(() => {
     window.localStorage.setItem("LOGIN_STATUS", JSON.stringify(isLoggedin));
@@ -86,6 +97,13 @@ function NavBarAuth () {
   }
   const handlePasswordChange = function(e) {
     setPassword(e.target.value);
+  }
+
+  function handleLogout() {
+    localStorage.setItem("LOGIN_STATUS", false);
+    localStorage.setItem("USERNAME", null);
+    localStorage.setItem('ADMIN_STATUS', false);
+    window.location.reload(true);
   }
 
   const handleSubmit = function(e){
@@ -103,7 +121,11 @@ function NavBarAuth () {
         try {
           data = JSON.parse(data);
           console.log(data);
-          if (data['username'] == username){
+          if (data['username'] === username){
+            if (data['isAdmin'] === 1){
+              setIsAdmin(true);
+              window.localStorage.setItem("ADMIN_STATUS", JSON.stringify(true)); 
+            }
             setIsLoggedIn(true);
             window.localStorage.setItem("USERNAME", JSON.stringify(username));
             window.location.reload(true);
@@ -144,7 +166,7 @@ function NavBarAuth () {
             <div className='loginPopup'>
               <form action="http://localhost:8000/php/login.php" method='POST' onSubmit={(event) => handleSubmit(event)}>
                 <input className='input' type='text' id='username' name='username' value={username} onChange={(event) => handleUsernameChange(event)} placeholder='username'></input>
-                <input className='input' type='text' id='password' name='password' value={password} onChange={(event) => handlePasswordChange(event)} placeholder='password'></input>
+                <input className='input' type='password' id='password' name='password' value={password} onChange={(event) => handlePasswordChange(event)} placeholder='password'></input>
                 <button className="button" type="submit" name="register">Login</button>
               </form>
             </div>
@@ -153,7 +175,7 @@ function NavBarAuth () {
         </Popup>}
         {isLoggedin && <li className='dropdown'>
           <div>
-              <button className='button'>{username}</button> 
+              <button className='button' style={{color: isAdmin ? '#f54257' : ''}}>{username}</button> 
               <div className='dropdownContent'>
                 <button className='button'>Profile</button>
                 <button className='button' onClick={handleLogout}>Logout</button>
